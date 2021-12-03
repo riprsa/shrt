@@ -1,0 +1,37 @@
+{{define "main"}}
+<head>
+  <meta charset="utf-8">
+  <title>Сокращатель ссылок</title>
+</head>
+<body>
+<h2>Сокращатель ссылок</h2>
+<form action="/" method="POST">
+  <div>Введите ссылку для укорачивания: <label>
+    <input type="text" name="url"></input>
+  </label></div>
+  <div><input type="submit" value="Создать"></div>
+</form>
+</body>
+{{end}}
+
+{{define "result"}}
+<head>
+  <meta charset="utf-8">
+  <title>Сокращатель ссылок</title>
+</head>
+<body>
+  <h2>Сокращатель ссылок</h2>
+  {{.}}
+</body>
+{{end}}
+
+{{define "error"}}
+<head>
+  <meta charset="utf-8">
+  <title>Сокращатель ссылок</title>
+</head>
+<body>
+  <h2>Ошибка</h2>
+  {{.}}
+</body>
+{{end}}
