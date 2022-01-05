@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/labstack/echo/v4/middleware"
 	"html/template"
 	"io"
 	"shorter/config"
@@ -28,7 +29,11 @@ func main() {
 	e := echo.New()
 	e.Renderer = t
 
+	e.Use(middleware.Logger())
+	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)))
+
 	h.REGISTER(*e.Group(""), &handler.ShortsStorage{})
+	h.REGISTER(*e.Group("/api"), &handler.APIShortsStorage{})
 
 	c := config.Config{}
 	err = c.LoadData()
