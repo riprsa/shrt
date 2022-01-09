@@ -1,6 +1,0 @@
-  username: hararudoka
-  password: 123
-  host: localhost
-  dbname: hararudoka
-  args: ?sslmode=disable
-  port: 80
