@@ -47,6 +47,10 @@ func main() {
 	}
 
 	e.Logger.Fatal(e.Start(":"+c.Port))
+
+	//if err := e.StartTLS(":1323", "cert.pem", "key.key"); err != http.ErrServerClosed {
+	//	log.Fatal(err)
+	//}
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
