@@ -1,2 +1,2 @@
 run:
-	go run cmd/webserver/main.go
+	go run cmd/main.go

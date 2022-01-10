@@ -6,11 +6,6 @@ import (
 )
 
 type Config struct {
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	Host string `yaml:"host"`
-	DBName string `yaml:"dbname"`
-	Args string `yaml:"args"`
 	Port string `yaml:"port"`
 }
 

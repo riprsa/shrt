@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4/middleware"
 	"html/template"
 	"io"
@@ -16,6 +17,11 @@ type Template struct {
 }
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+
 	t := &Template{
 		templates: template.Must(template.ParseGlob("view/*.html")),
 	}
@@ -33,7 +39,6 @@ func main() {
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)))
 
 	h.REGISTER(*e.Group(""), &handler.ShortsStorage{})
-	h.REGISTER(*e.Group("/api"), &handler.APIShortsStorage{})
 
 	c := config.Config{}
 	err = c.LoadData()

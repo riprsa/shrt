@@ -1,15 +1,15 @@
 {{define "main"}}
 <head>
   <meta charset="utf-8">
-  <title>Сокращатель ссылок</title>
+  <title>URL Shorter</title>
 </head>
 <body>
-<h2>Сокращатель ссылок</h2>
+<h2>URL Shorter</h2>
 <form action="/" method="POST">
-  <div>Введите ссылку для укорачивания: <label>
-    <input type="text" name="url"></input>
+  <div><label>
+    <input type="text" name="url"/>
   </label></div>
-  <div><input type="submit" value="Создать"></div>
+  <div><input type="submit" value="Create"></div>
 </form>
 </body>
 {{end}}
@@ -17,10 +17,10 @@
 {{define "result"}}
 <head>
   <meta charset="utf-8">
-  <title>Сокращатель ссылок</title>
+  <title>URL Shorter</title>
 </head>
 <body>
-  <h2>Сокращатель ссылок</h2>
+  <h2>URL Shorter</h2>
   {{.}}
 </body>
 {{end}}
@@ -28,10 +28,31 @@
 {{define "error"}}
 <head>
   <meta charset="utf-8">
-  <title>Сокращатель ссылок</title>
+  <title>URL Shorter</title>
 </head>
 <body>
-  <h2>Ошибка</h2>
+  <h2>Error</h2>
   {{.}}
+</body>
+{{end}}
+
+{{define "wrongURL"}}
+<head>
+  <meta charset="utf-8">
+  <title>URL Shorter</title>
+</head>
+<body>
+<h2>Wrong URL</h2>
+<a href="/">Try again</a>
+</body>
+{{end}}
+
+{{define "404"}}
+<head>
+  <meta charset="utf-8">
+  <title>404</title>
+</head>
+<body>
+<h2>404</h2>
 </body>
 {{end}}
