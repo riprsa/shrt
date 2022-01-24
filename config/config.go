@@ -10,7 +10,7 @@ type Config struct {
 }
 
 func (c *Config) LoadData() error {
-	b, err := ioutil.ReadFile("config/config.yaml")
+	b, err := ioutil.ReadFile("config.yaml")
 	if err != nil {
 		return err
 	}

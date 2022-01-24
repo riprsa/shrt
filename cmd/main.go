@@ -48,8 +48,8 @@ func main() {
 
 	e.Logger.Fatal(e.Start(":"+c.Port))
 
-	//if err := e.StartTLS(":1323", "cert.pem", "key.key"); err != http.ErrServerClosed {
-	//	log.Fatal(err)
+	//if err := e.StartTLS(":"+c.Port, "h.pem", "h.key"); err != http.ErrServerClosed {
+	//	panic(err)
 	//}
 }
 
