@@ -64,16 +64,14 @@ jobs:
           port: ${{ secrets.PORT }}
           envs: IMAGE_NAME,REGISTRY,GITHUB_SHA,LOGS_PATH,CONTAINER_NAME
           script: |
-            # Set env variables
-            # export POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
             # Stop running container
             docker stop $(echo $CONTAINER_NAME)
             # Remove old container
             docker rm $(echo $CONTAINER_NAME)
 
             # Run a new container from a new image
-            docker run --env  \
+            docker run --env DB_USERNAME=${{ secrets.DB_USERNAME }} DB_PASSWORD=${{ secrets.DB_PASSWORD }} DB_HOSTNAME=${{ secrets.DB_HOSTNAME }} DB_NAME=${{ secrets.DB_NAME }} DB_MODE=${{ secrets.DB_MODE }} PORT=${{ secrets.PORT }} SERVER_KEY=${{ secrets.SERVER_KEY }} SERVER_PEM=${{ secrets.SERVER_PEM }} \
             --restart always \
-            --publish 8000:8000 \
+            --publish 80:80 \
             --name $(echo $CONTAINER_NAME) \
             -d $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
