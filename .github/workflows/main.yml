@@ -8,7 +8,7 @@ on:
     branches:
       - main
 env:
-  REGISTRY: "https://hub.docker.com/repository/docker/haraldka/"
+  REGISTRY: "https://hub.docker.com/repository/docker/haraldka"
   IMAGE_NAME: "shorter"
   CONTAINER_NAME: "shorter"
 
