@@ -10,7 +10,7 @@ on:
 env:
   REGISTRY: "haraldka"
   IMAGE_NAME: "shorter"
-  CONTAINER_NAME: "shorter"
+  CONTAINER_NAME: "short"
 
 jobs:
   test:
@@ -69,8 +69,8 @@ jobs:
             docker rm -f $(echo $CONTAINER_NAME)
 
             # Run a new container from a new image
-            docker run --env DB_USERNAME=$(echo ${{ secrets.DB_USERNAME }}) DB_PASSWORD=$(echo ${{ secrets.DB_PASSWORD }}) DB_HOSTNAME=$(echo ${{ secrets.DB_HOSTNAME }}) DB_NAME=$(echo ${{ secrets.DB_NAME }}) DB_MODE=$(echo ${{ secrets.DB_MODE }}) SERVER_PORT=$(echo ${{ secrets.SERVER_PORT }}) \
+            docker run --env DB_USERNAME=$(echo ${{ secrets.DB_USERNAME }}) DB_PASSWORD=$(echo ${{ secrets.DB_PASSWORD }}) DB_HOSTNAME=$(echo ${{ secrets.DB_HOSTNAME }}) DB_NAME=$(echo ${{ secrets.DB_NAME }}) DB_MODE=$(echo ${{ secrets.DB_MODE }}) SERVER_PORT=$(echo ${{ secrets.SERVER_PORT }}) SERVER_KEY=$(echo ${{ secrets.SERVER_KEY }}) SERVER_PEM=$(echo ${{ secrets.SERVER_PEM }}) \
             --restart always \
             --publish 8000:8000 \
             --name $(echo $CONTAINER_NAME) \
-            -d $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+            -d haraldka/shorter:$(echo $GITHUB_SHA | head -c7)
