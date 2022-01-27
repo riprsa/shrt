@@ -10,7 +10,7 @@ on:
 env:
   REGISTRY: "haraldka"
   IMAGE_NAME: "shorter"
-  CONTAINER_NAME: "short"
+  CONTAINER_NAME: "shorter"
 
 jobs:
   test:
