@@ -5,18 +5,13 @@ import (
 	"github.com/jmoiron/sqlx"
 	"log"
 	"os"
+	"shorter/internal/model"
 
 	_ "github.com/lib/pq"
 )
 
 type DB struct {
 	*sqlx.DB
-}
-
-type Data struct {
-	ID    int
-	URL   string
-	Short string
 }
 
 func Open() (*DB, error) {
@@ -49,15 +44,15 @@ func (db *DB) Insert(URL, short string) error {
 	return err
 }
 
-func (db *DB) ByShort(short string) (Data, error) {
-	var data Data
+func (db *DB) ByShort(short string) (model.Data, error) {
+	var data model.Data
 	row := db.QueryRow("SELECT * FROM links WHERE short=($1)", short)
 	err := row.Scan(&data.ID, &data.URL, &data.Short)
 	return data, err
 }
 
-func (db *DB) ByURL(url string) (Data, error) {
-	var data Data
+func (db *DB) ByURL(url string) (model.Data, error) {
+	var data model.Data
 	row := db.QueryRow("SELECT * FROM links WHERE url=($1)", url)
 	err := row.Scan(&data.ID, &data.URL, &data.Short)
 	return data, err

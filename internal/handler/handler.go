@@ -4,13 +4,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"html/template"
 	"math/rand"
-	"shorter/storage"
+	"shorter/internal/storage"
 	"time"
 )
-
-type Handler struct {
-	DB *storage.DB
-}
 
 type handler struct {
 	db *storage.DB
@@ -20,9 +16,9 @@ type Template struct {
 	templates *template.Template
 }
 
-func NewHandler(h Handler) *handler {
+func New(db *storage.DB) *handler {
 	return &handler{
-		db: h.DB,
+		db: db,
 	}
 }
 
