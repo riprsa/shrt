@@ -1,0 +1,5 @@
+services:
+  server:
+    ports:
+      - image: haraldka/shorter:latest
+      - "80:80"

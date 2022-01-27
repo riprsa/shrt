@@ -36,7 +36,7 @@ jobs:
     needs: test
 
     steps:
-      - name: Log in to Docker Hub
+      - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -53,7 +53,7 @@ jobs:
     needs: build_and_push
 
     steps:
-      - name: Deploy to Lambda via SSH action
+      - name: Deploy to Server via SSH action
         uses: appleboy/ssh-action@v0.1.3
         with:
           host: ${{ secrets.HOST }}
@@ -62,15 +62,8 @@ jobs:
           port: ${{ secrets.PORT }}
           envs: IMAGE_NAME, REGISTRY, GITHUB_SHA, CONTAINER_NAME
           script: |
-            # Stop running container
-            docker stop $(echo $CONTAINER_NAME)
-            # Remove old container
-            docker rm $(echo $CONTAINER_NAME)
-            docker rm -f $(echo $CONTAINER_NAME)
 
-            # Run a new container from a new image
-            docker run --env DB_USERNAME=$(echo ${{ secrets.DB_USERNAME }}) DB_PASSWORD=$(echo ${{ secrets.DB_PASSWORD }}) DB_HOSTNAME=$(echo ${{ secrets.DB_HOSTNAME }}) DB_NAME=$(echo ${{ secrets.DB_NAME }}) DB_MODE=$(echo ${{ secrets.DB_MODE }}) SERVER_PORT=$(echo ${{ secrets.SERVER_PORT }}) SERVER_KEY=$(echo ${{ secrets.SERVER_KEY }}) SERVER_PEM=$(echo ${{ secrets.SERVER_PEM }}) \
-            --restart always \
-            --publish 8000:8000 \
-            --name shorter \
-            -d haraldka/shorter:$(echo $GITHUB_SHA | head -c7)
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            docker compose up -d
+
+
