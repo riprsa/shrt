@@ -69,7 +69,7 @@ jobs:
             docker rm $(echo $CONTAINER_NAME)
 
             # Run a new container from a new image
-            docker run --env DB_USERNAME=$(echo ${{ secrets.DB_USERNAME }}) DB_PASSWORD=$(echo ${{ secrets.DB_PASSWORD }}) DB_HOSTNAME=$(echo ${{ secrets.DB_HOSTNAME }}) DB_NAME=$(echo ${{ secrets.DB_NAME }}) DB_MODE=$(echo ${{ secrets.DB_MODE }}) SERVER_PORT=$(echo ${{ secrets.SERVER_PORT }}) SERVER_KEY=$(echo ${{ secrets.SERVER_KEY }}) SERVER_PEM=$(echo ${{ secrets.SERVER_PEM }}) \
+            docker run --env DB_USERNAME=$(echo ${{ secrets.DB_USERNAME }}) DB_PASSWORD=$(echo ${{ secrets.DB_PASSWORD }}) DB_HOSTNAME=$(echo ${{ secrets.DB_HOSTNAME }}) DB_NAME=$(echo ${{ secrets.DB_NAME }}) DB_MODE=$(echo ${{ secrets.DB_MODE }}) SERVER_PORT=$(echo ${{ secrets.SERVER_PORT }}) \
             --restart always \
             --publish 8000:8000 \
             --name $(echo $CONTAINER_NAME) \
