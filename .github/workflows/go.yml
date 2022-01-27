@@ -11,7 +11,6 @@ env:
   REGISTRY: "haraldka"
   IMAGE_NAME: "shorter"
   CONTAINER_NAME: "shorter"
-  LOGS_PATH: "/root/bot/api/logs/prod"
 
 jobs:
   test:

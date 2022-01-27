@@ -1,6 +1,23 @@
-FROM golang:alpine as build-env
-LABEL maintainer="hararudoka@gmail.com"
-COPY . /app
-WORKDIR /app
-RUN go mod download && go build -o /usr/bin/shorter main.go
-ENTRYPOINT ["shorter"]
+FROM golang:alpine as builder
+
+RUN go version
+RUN apk add git
+
+COPY ./ /github.com/hararudoka/shorter
+WORKDIR /github.com/hararudoka/shorter
+
+RUN go mod download && go get -u ./...
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./.bin/app ./main.go
+
+#lightweight docker container with binary
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates
+WORKDIR /root/
+
+COPY --from=0 /github.com/hararudoka/shorter/.bin/app .
+
+EXPOSE 80/tcp
+EXPOSE 443/tcp
+
+CMD [ "./app"]
