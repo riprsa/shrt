@@ -64,6 +64,6 @@ jobs:
           script: |
 
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            docker compose up -d
+            docker-compose up -d
 
 
