@@ -1,5 +1,5 @@
 services:
   server:
+    image: haraldka/shorter:latest
     ports:
-      - image: haraldka/shorter:latest
       - "8000:8000"
