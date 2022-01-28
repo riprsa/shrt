@@ -24,6 +24,8 @@ func Open() (*DB, error) {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=%s",
 		name, password, host, dbName, mode)
 
+	log.Println(connStr)
+
 	db, err := sqlx.Connect("postgres", connStr)
 	if err != nil {
 		return nil, err
