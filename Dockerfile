@@ -15,6 +15,7 @@ FROM alpine
 WORKDIR /app
 
 COPY --from=builder /build/shorter .
+COPY --from=builder /build/shorter/view view
 
 EXPOSE 80/tcp 443/tcp
 
