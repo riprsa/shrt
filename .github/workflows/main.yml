@@ -63,5 +63,6 @@ jobs:
           #envs: IMAGE_NAME, REGISTRY, GITHUB_SHA, CONTAINER_NAME
           script: |
 
+            cd /home/opc/shorter
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             docker-compose up -d
