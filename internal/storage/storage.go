@@ -24,14 +24,9 @@ func Open() (*DB, error) {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=%s",
 		name, password, host, dbName, mode)
 
-	db, err := sqlx.Open("postgres", connStr)
+	db, err := sqlx.Connect("postgres", connStr)
 	if err != nil {
-		log.Fatal(err)
-	}
-
-	pingErr := db.Ping()
-	if pingErr != nil {
-		log.Fatal(pingErr)
+		return nil, err
 	}
 
 	log.Println("connected")
