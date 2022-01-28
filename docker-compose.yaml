@@ -2,4 +2,4 @@ services:
   server:
     image: haraldka/shorter:latest
     ports:
-      - "8000:8000"
+      - "80:80"
