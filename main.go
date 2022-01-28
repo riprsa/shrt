@@ -9,7 +9,6 @@ import (
 	"shorter/internal/storage"
 )
 
-
 func main() {
 	db, err := storage.Open()
 	if err != nil {
@@ -28,7 +27,7 @@ func main() {
 
 	h.REGISTER(*e.Group(""), &handler.Shorts{})
 
-	e.Logger.Fatal(e.Start(":"+os.Getenv("PORT")))
+	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 
 	//pem := os.Getenv("SERVER_PEM")
 	//key := os.Getenv("SERVER_KEY")
@@ -37,4 +36,3 @@ func main() {
 	//	panic(err)
 	//}
 }
-

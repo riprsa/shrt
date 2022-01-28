@@ -14,44 +14,39 @@
 {{end}}
 
 {{define "result"}}
-<head>
-  <meta charset="utf-8">
-  <title>URL Shorter</title>
-</head>
-<body>
-  <h2>URL Shorter</h2>
-  {{.}}
-</body>
+{{template "base"}}
+<div class="container">
+  <div class="intro"><h2 class="text-center">URL Shorter</h2>
+    <p class="text-center">  {{.}} </p></div>
+
+</div>
+{{template "down"}}
 {{end}}
 
 {{define "error"}}
-<head>
-  <meta charset="utf-8">
-  <title>URL Shorter</title>
-</head>
-<body>
-  <h2>Error</h2>
-  {{.}}
-</body>
-{{end}}
+  {{template "base"}}
+<div class="container">
+  <div class="intro"><h2 class="text-center">Error</h2>
+    <p class="text-center">  {{.}} </p></div>
+
+</div>
+  {{template "down"}}
+  {{end}}
 
 {{define "wrongURL"}}
-<head>
-  <meta charset="utf-8">
-  <title>URL Shorter</title>
-</head>
-<body>
-<h2>Wrong URL</h2>
-<a href="/">Try again</a>
-</body>
-{{end}}
+  {{template "base"}}
+<div class="container">
+  <div class="intro"><h2 class="text-center">Error</h2>
+    <p class="text-center">  <a href="/">Try again</a> </p></div>
+
+</div>
+  {{template "down"}}
+  {{end}}
 
 {{define "404"}}
-<head>
-  <meta charset="utf-8">
-  <title>404</title>
-</head>
-<body>
-<h2>404</h2>
-</body>
-{{end}}
+  {{template "base"}}
+<div class="container">
+  <div class="intro"><h2 class="text-center">404</h2></div>
+</div>
+  {{template "down"}}
+  {{end}}
