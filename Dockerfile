@@ -2,7 +2,7 @@ FROM golang:alpine as builder
 
 WORKDIR /build
 
-COPY go.mod go.sum ./
+COPY go.mod go.sum docker-compose.yaml ./
 
 RUN go mod download
 

@@ -60,7 +60,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHKEY }}
           port: ${{ secrets.PORT }}
-          envs: IMAGE_NAME, REGISTRY, GITHUB_SHA, CONTAINER_NAME
+          #envs: IMAGE_NAME, REGISTRY, GITHUB_SHA, CONTAINER_NAME
           script: |
 
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
