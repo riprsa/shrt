@@ -65,4 +65,4 @@ jobs:
 
             cd /home/opc/shorter
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            docker-compose up -d
+            docker-compose --env-file .env up -d
