@@ -1,5 +1,7 @@
 services:
   server:
     image: haraldka/shorter:latest
+    env_file:
+      - .env
     ports:
       - "80:80"
