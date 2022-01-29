@@ -1,4 +1,4 @@
-# 🚀 Super URL shorter
+# 🔗✂️ Super URL shorter
 
 This project can help you with shorting your URLs in your conversation or presentation.
 
