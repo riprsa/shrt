@@ -60,8 +60,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHKEY }}
           port: ${{ secrets.PORT }}
-          #envs: IMAGE_NAME, REGISTRY, GITHUB_SHA, CONTAINER_NAME
           script: |
-            cd /home/opc/shorter
+            cd /home/${{ secrets.USERNAME }}/${{ env.CONTAINER_NAME }}
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             docker-compose up -d
