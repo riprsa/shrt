@@ -63,4 +63,4 @@ jobs:
           script: |
             cd /home/${{ secrets.USERNAME }}/${{ env.CONTAINER_NAME }}
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            docker-compose up -d
+            docker compose up -d
