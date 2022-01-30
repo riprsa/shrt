@@ -2,23 +2,16 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
-	"html/template"
-	"math/rand"
-	"shorter/internal/storage"
-	"time"
+	"shorter/internal/service"
 )
 
 type handler struct {
-	db *storage.DB
+	service *service.Service
 }
 
-type Template struct {
-	templates *template.Template
-}
-
-func New(db *storage.DB) *handler {
+func New(service *service.Service) *handler {
 	return &handler{
-		db: db,
+		service: service,
 	}
 }
 
@@ -28,14 +21,4 @@ type Router interface {
 
 func (h handler) NewGroup(g *echo.Group, r Router)  {
 	r.Register(h, g)
-}
-
-func makeShort() string {
-	rand.Seed(time.Now().Unix())
-	var s string
-	ra := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	for i := 0; i < 6; i++ {
-		s += string(ra[rand.Intn(len(ra))])
-	}
-	return s
 }

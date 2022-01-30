@@ -1,12 +1,14 @@
 package main
 
 import (
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"net/http"
 	"os"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"shorter/internal/handler"
 	"shorter/internal/html"
+	"shorter/internal/service"
 	"shorter/internal/storage"
 )
 
@@ -16,7 +18,9 @@ func main() {
 		panic(err)
 	}
 
-	h := handler.New(db)
+	s := service.New(db)
+
+	h := handler.New(s)
 
 	e := echo.New()
 	t := html.New()
@@ -27,6 +31,7 @@ func main() {
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)))
 
 	h.NewGroup(e.Group(""), &handler.Shorts{})
+	h.NewGroup(e.Group("api"), &handler.ShortsAPI{})
 
 	//e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 
