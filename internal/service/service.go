@@ -3,6 +3,7 @@ package service
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"math/rand"
 
 	"shorter/internal/storage"
@@ -20,11 +21,15 @@ func New(db *storage.DB) *Service {
 // GetShort generates or take from DB Short
 func (s Service) GetShort(url string) (string, error)  {
 	dataFromDB, err := s.db.ByURL(url)
+
 	if err == sql.ErrNoRows {
+		log.Println("не пустота")
 		short, err := s.createShort(url)
+		log.Println("почти пустота")
 		if err != nil {
 			return "", err
 		}
+		log.Println("пустота")
 
 		return short, nil
 	} else if err != nil {
@@ -68,9 +73,9 @@ func (s Service) createShort(url string) (string, error) {
 func (s Service) exist(ms string) (bool, error) {
 	_, err := s.db.ByShort(ms)
 	if err == sql.ErrNoRows {
-		return true, nil
+		return false, nil
 	}
-	return false, err
+	return true, err
 }
 
 func generateShort() string {
