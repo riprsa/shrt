@@ -12,7 +12,7 @@ type Shorts struct {
 	handler
 }
 
-func (s Shorts) Register(h handler, g echo.Group) {
+func (s Shorts) Register(h handler, g *echo.Group) {
 	s.handler = h
 
 	g.GET("/", s.Wait)

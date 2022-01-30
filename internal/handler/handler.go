@@ -22,12 +22,12 @@ func New(db *storage.DB) *handler {
 	}
 }
 
-type Service interface {
-	Register(h handler, g echo.Group)
+type Router interface {
+	Register(h handler, g *echo.Group)
 }
 
-func (h handler) REGISTER(group echo.Group, service Service) {
-	service.Register(h, group)
+func (h handler) NewGroup(g *echo.Group, r Router)  {
+	r.Register(h, g)
 }
 
 func makeShort() string {
