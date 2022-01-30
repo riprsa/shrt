@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -30,10 +31,17 @@ func (s Shorts) ProcessURL(c echo.Context) error {
 		return c.Render(http.StatusBadRequest, "wrongURL", nil)
 	}
 
+	log.Println(1)
+
 	short, err := s.service.GetShort(url)
+	log.Println(2)
+
 	if err != nil {
 		return c.Render(http.StatusBadRequest, "error", err)
 	}
+
+	log.Println(3)
+
 
 	return c.Render(http.StatusOK, "result", c.Request().Host+"/"+short)
 }

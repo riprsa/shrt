@@ -17,7 +17,7 @@ func New(db *storage.DB) *Service {
 	return &Service{db: db}
 }
 
-// Create generates or take from DB Short
+// GetShort generates or take from DB Short
 func (s Service) GetShort(url string) (string, error)  {
 	dataFromDB, err := s.db.ByURL(url)
 	if err == sql.ErrNoRows {
