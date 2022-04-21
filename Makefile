@@ -1,2 +1,7 @@
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
 run:
-	go run cmd/main.go
+	go run cmd/api/main.go

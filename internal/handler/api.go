@@ -1,45 +1,55 @@
 package handler
 
 import (
+	"database/sql"
 	"net/http"
 
-	"github.com/labstack/echo/v4"
 	"shorter/internal/model"
-	"shorter/internal/validate"
+
+	"github.com/labstack/echo/v4"
 )
 
-type ShortsAPI struct {
+type ShortService struct {
 	handler
 }
 
-func (s ShortsAPI) Register(h handler, g *echo.Group) {
+func (s ShortService) Register(h handler, g *echo.Group) {
 	s.handler = h
 
 	g.GET("", s.GetURL)
-	g.POST("", s.ProcessURL)
+	g.POST("", s.SaveURL)
+
+	g.GET("*", s.Redirect)
 }
 
-func (s ShortsAPI) GetURL(c echo.Context) error {
-	return c.JSON(http.StatusOK, "json POST request with field url")
+func (s ShortService) GetURL(c echo.Context) error {
+	return c.JSON(http.StatusBadRequest, "need json POST request with field url")
 }
 
-
-func (s ShortsAPI) ProcessURL(c echo.Context) error {
+// SaveURL is a handler for POST request.
+func (s ShortService) SaveURL(c echo.Context) error {
+	// get url from request
 	var data model.Data
 	err := c.Bind(&data)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	url, ok := validate.URL(data.URL)
-	if !ok {
-		return c.JSON(http.StatusNotFound, "wrong_url")
-	}
-
-	short, err := s.service.GetShort(url)
+	// get short url
+	short, err := s.GetShort(data.URL)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		
+		if err.Error() == "url is broken" {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		} else if err.Error() == sql.ErrNoRows.Error() {
+			return c.JSON(http.StatusNotFound, err.Error())
+		}
+		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, c.Request().Host+"/"+short)
+	return c.JSON(http.StatusOK, model.Response{Short: short})
+}
+
+func (s ShortService) Redirect(c echo.Context) error {
+	return c.JSON(302, model.Response{Short: c.Param("*")})
 }

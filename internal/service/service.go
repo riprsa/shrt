@@ -4,25 +4,37 @@ import (
 	"database/sql"
 	"fmt"
 	"math/rand"
+	"regexp"
 
 	"shorter/internal/storage"
-	"shorter/internal/validate"
 )
 
 // Service is a struct for service layer
 type Service struct {
-	db *storage.DB
+	db             *storage.DB
+	URLRegexp      *regexp.Regexp
+	ProtocolRegexp *regexp.Regexp
 }
 
 // New creates new Service
 func New(db *storage.DB) *Service {
-	return &Service{db: db}
+	return &Service{
+		db:             db,
+		URLRegexp:      regexp.MustCompile("([a-z]*:\\/\\/)?[a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)"),
+		ProtocolRegexp: regexp.MustCompile("[a-z]*:\\/\\/[a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)"),
+	}
 }
 
-// GetShort generates or take from DB Short
+// GetShort generates or takes from DB Short
 func (s Service) GetShort(url string) (string, error) {
-	dataFromDB, err := s.db.ByURL(url)
+	// validate url
+	url, ok := s.ValidateURL(url)
+	if !ok {
+		return "", fmt.Errorf("url is broken")
+	}
 
+	// check if url exists in DB
+	dataFromDB, err := s.db.ByURL(url)
 	if err == sql.ErrNoRows {
 		short, err := s.createShort(url)
 		if err != nil {
@@ -39,12 +51,12 @@ func (s Service) GetShort(url string) (string, error) {
 func (s Service) GetURL(short string) (string, error) {
 	data, err := s.db.ByShort(short)
 	if err == sql.ErrNoRows {
-		return "", fmt.Errorf("not found: ")
+		return "", fmt.Errorf("not found")
 	} else if err != nil {
 		return "", err
 	}
 
-	url, ok := validate.URL(data.URL)
+	url, ok := s.ValidateURL(data.URL)
 	if !ok {
 		return "", fmt.Errorf("url is broken")
 	}
@@ -84,4 +96,19 @@ func generateShort() string {
 		s = append(s, ra[rand.Intn(len(ra))])
 	}
 	return string(s)
+}
+
+// ValidateURL validates and adds protocol if link hasn't it
+func (s Service) ValidateURL(url string) (string, bool) {
+	ok := s.URLRegexp.Match([]byte(url))
+	if !ok {
+		return "", false
+	}
+
+	withProtocol := s.ProtocolRegexp.Match([]byte(url))
+	if !withProtocol {
+		url = "http://" + url
+	}
+
+	return url, true
 }

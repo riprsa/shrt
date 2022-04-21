@@ -1,7 +1,11 @@
 package model
 
+// Data represents request or response data
 type Data struct {
-	ID    int
-	URL   string
-	Short string
+	URL   string `json:"url"`
+	Short string `json:"short"`
+}
+
+type Response struct{
+	Short string `json:"short"`
 }
