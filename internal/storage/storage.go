@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"shorter/internal/model"
+	"github.com/hararudoka/shrt/internal/model"
 
 	"github.com/jmoiron/sqlx"
 

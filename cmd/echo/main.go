@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 
-	handler "shorter/internal/handler/echo"
-	"shorter/internal/service"
-	"shorter/internal/storage"
+	handler "github.com/hararudoka/shrt/internal/handler/echo"
+	"github.com/hararudoka/shrt/internal/service"
+	"github.com/hararudoka/shrt/internal/storage"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
