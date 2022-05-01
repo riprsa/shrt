@@ -9,3 +9,11 @@ type Data struct {
 type Response struct{
 	Short string `json:"short"`
 }
+
+type Short struct{
+	Short string `json:"short"`
+}
+
+type URL struct{
+	URL string `json:"url"`
+}

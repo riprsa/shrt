@@ -104,17 +104,13 @@ func SanitizeURL(u string) (string, error) {
 	if u == "" {
 		return "", ErrEmptyURL
 	}
-	if 
 	url, err := url.Parse(u)
 	if err != nil {
 		return "", err
 	}
 	url.User = nil
-	return url.Host + url., nil
+	return url.Host, nil
 }
-
-
-
 
 // ValidateURL validates and adds protocol if link hasn't it
 func (s Service) ValidateURL(url string) (string, bool) {
