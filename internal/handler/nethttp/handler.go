@@ -21,23 +21,28 @@ func New(s service.Service) http.Handler {
 
 func (h Handler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		if len(r.URL.Path) == 7 {
+		if len(r.URL.Path) == 7 { // TODO: rewrite conditional
 			h.GetRedirect(rw, r)
+			return
 		}
 	}
 	if r.Method == http.MethodPost {
 		if r.URL.Path == "/short" {
 			h.Short(rw, r)
+			return
 		}
 		if r.URL.Path == "/url" {
 			h.URL(rw, r)
+			return
 		}
-	}
+	} // TODO: Methods
+
+	rw.WriteHeader(http.StatusBadRequest)
 }
 
 // Short returns JSON with a short. Asking for a URL in the body.
 func (h Handler) Short(w http.ResponseWriter, r *http.Request) {
-	u := model.URL{}
+	var u model.URL
 	err := json.NewDecoder(r.Body).Decode(&u)
 	if err != nil {
 		// TODO: errors
@@ -68,7 +73,7 @@ func (h Handler) Short(w http.ResponseWriter, r *http.Request) {
 
 // URL returns JSON with a full URL. Asking for a Short in the body.
 func (h Handler) URL(w http.ResponseWriter, r *http.Request) {
-	s := model.Short{}
+	var s model.Short
 	err := json.NewDecoder(r.Body).Decode(&s)
 	if err != nil {
 		// TODO: errors
