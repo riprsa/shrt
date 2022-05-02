@@ -1,7 +1,11 @@
 ifneq (,$(wildcard ./.env))
-    include .env
-    export
+	include .env
+	export
 endif
 
-run:
-	go run cmd/api/main.go
+echo:
+	go run cmd/echo/main.go
+nethttp:
+	go run cmd/nethttp/main.go
+test:
+	go test ./...

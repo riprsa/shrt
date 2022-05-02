@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 
-	"shorter/internal/model"
+	"github.com/hararudoka/shrt/internal/model"
 
 	"github.com/labstack/echo/v4"
 )
@@ -36,9 +36,9 @@ func (s ShortService) SaveURL(c echo.Context) error {
 	}
 
 	// get short url
-	short, err := s.GetShort(data.URL)
+	short, err := s.URL2Hash(data.URL)
 	if err != nil {
-		
+
 		if err.Error() == "url is broken" {
 			return c.JSON(http.StatusBadRequest, err.Error())
 		} else if err.Error() == sql.ErrNoRows.Error() {

@@ -2,24 +2,50 @@
 
 This project is my first attempt at a URL shortener. It's a simple web app that allows you to short any URL you want by API request. It's not perfect, but it's pretty good, I swear! It's also open source, so you can check out the code on this page.
 
-## Features
+## Usage
 
-nope now
+### Create Short URL
 
-## TODOes
-
-create API with JSON request:
+HTTP POST Request to <https://shrt.co/newshort>
 
 ```json
 {
-    "url":"example.com"
+    "url":"example.com/mypath"
 }
 ```
 
-and respond:
+HTTP Response
 
 ```json
 {
     "short":"AAAAAA"
+}
+```
+
+### Use Short URL
+
+HTTP GET Request will result in a HTTP 302 Redirect:
+
+```sh
+curl -IX GET https://shrt.co/AAAAAA
+HTTP/1.1 302 Found
+Location: https://example.com/mypath
+```
+
+### Get Short URL
+
+HTTP POST Request to <https://shrt.co/geturl>
+
+```json
+{
+    "short":"AAAAAA"
+}
+```
+
+HTTP Response
+
+```json
+{
+    "url":"example.com/mypath"
 }
 ```

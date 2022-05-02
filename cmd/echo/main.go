@@ -1,23 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
-	"shorter/internal/handler"
-	"shorter/internal/service"
-	"shorter/internal/storage"
+	handler "github.com/hararudoka/shrt/internal/handler/echo"
+	"github.com/hararudoka/shrt/internal/service"
+	"github.com/hararudoka/shrt/internal/storage"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
-	mode := ""
-	fmt.Println("choose mode:\n1. without pem\n2. with pem")
-	fmt.Scan(&mode)
-
 	db, err := storage.Open()
 	if err != nil {
 		panic(err)
@@ -34,7 +29,7 @@ func main() {
 
 	h.NewGroup(e.Group("api"), &handler.ShortService{})
 
-	if mode == "1" {
+	if os.Getenv("MODE") == "1" {
 		e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 	} else {
 		pem := os.Getenv("SERVER_PEM")
