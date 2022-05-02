@@ -6,17 +6,24 @@ import (
 	"fmt"
 	"math/rand"
 	"net/url"
+	"strings"
 
-	"github.com/hararudoka/shrt/internal/storage"
+	"github.com/hararudoka/shrt/internal/model"
 )
+
+type Storage interface {
+	Insert(URL, short string) error
+	ByShort(short string) (model.Data, error)
+	ByURL(url string) (model.Data, error)
+}
 
 // Service is a struct for service layer
 type Service struct {
-	db *storage.DB
+	db Storage
 }
 
 // New creates new Service
-func New(db *storage.DB) *Service {
+func New(db Storage) *Service {
 	return &Service{
 		db: db,
 	}
@@ -100,6 +107,10 @@ func generateShort() string {
 
 var ErrEmptyURL = errors.New("URL must not be empty string")
 
+// SanitizeURL return URL string with properly encoded query and stripped of
+// schema and user identification parts. Sanitized URL contains only host,
+// path, query and fragment parts (per RFC 3986) in return to the provided
+// ID string.
 func SanitizeURL(u string) (string, error) {
 	if u == "" {
 		return "", ErrEmptyURL
@@ -108,8 +119,10 @@ func SanitizeURL(u string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	// Strip URL from the User identification and from the scheme
+	// prefix before returning.
 	url.User = nil
-	return url.Host, nil
+	return strings.SplitN(url.String(), "://", 2)[1], nil
 }
 
 // ValidateURL validates and adds protocol if link hasn't it

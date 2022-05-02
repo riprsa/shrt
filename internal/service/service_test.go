@@ -19,7 +19,7 @@ func TestSanitizeURL(t *testing.T) {
 		{
 			name: "Full HTTP URL",
 			url:  "http://user:password@myhost.mydomain/path?query=value#fragment",
-			want: "myhost.mydomain/query?request=value#target",
+			want: "myhost.mydomain/path?query=value#fragment",
 		},
 	}
 	for _, tt := range tests {
