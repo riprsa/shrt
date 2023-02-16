@@ -3,9 +3,6 @@ package service
 import "testing"
 
 func TestSanitizeURL(t *testing.T) {
-	type args struct {
-		u string
-	}
 	tests := []struct {
 		name string
 		url  string

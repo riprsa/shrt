@@ -3,9 +3,8 @@ ifneq (,$(wildcard ./.env))
 	export
 endif
 
-echo:
-	go run cmd/echo/main.go
-nethttp:
+run:
 	go run cmd/nethttp/main.go
+	
 test:
 	go test ./...

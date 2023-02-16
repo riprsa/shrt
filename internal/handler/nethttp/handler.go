@@ -19,25 +19,29 @@ func New(s service.Service) http.Handler {
 	}
 }
 
-func (h Handler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		if len(r.URL.Path) == 7 { // TODO: rewrite conditional
-			h.GetRedirect(rw, r)
+		if len(r.URL.Path) == 7 {
+			h.Redirect(w, r)
 			return
 		}
+		http.NotFound(w, r)
+		return
 	}
 	if r.Method == http.MethodPost {
 		if r.URL.Path == "/short" {
-			h.Short(rw, r)
+			h.Short(w, r)
 			return
 		}
 		if r.URL.Path == "/url" {
-			h.URL(rw, r)
+			h.URL(w, r)
 			return
 		}
-	} // TODO: Methods
+		http.NotFound(w, r)
+		return
+	}
 
-	rw.WriteHeader(http.StatusBadRequest)
+	http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 }
 
 // Short returns JSON with a short. Asking for a URL in the body.
@@ -102,8 +106,7 @@ func (h Handler) URL(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//
-func (h Handler) GetRedirect(w http.ResponseWriter, r *http.Request) {
+func (h Handler) Redirect(w http.ResponseWriter, r *http.Request) {
 	// we here only if it is GET method of "/"
 
 	url, err := h.Service.Hash2URL(r.URL.Path[1:])
@@ -113,5 +116,5 @@ func (h Handler) GetRedirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, url, http.StatusFound)
+	http.Redirect(w, r, "https://"+url, http.StatusFound)
 }

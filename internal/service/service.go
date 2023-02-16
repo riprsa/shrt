@@ -58,7 +58,7 @@ func (s Service) URL2Hash(url string) (string, error) {
 func (s Service) Hash2URL(short string) (string, error) {
 	data, err := s.db.ByShort(short)
 	if err == sql.ErrNoRows {
-		return "", fmt.Errorf("not found")
+		return "", fmt.Errorf("404 page not found")
 	} else if err != nil {
 		return "", err
 	}
