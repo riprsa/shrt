@@ -4,7 +4,7 @@ ifneq (,$(wildcard ./.env))
 endif
 
 run:
-	go run cmd/nethttp/main.go
+	go run cmd/main.go
 	
 test:
 	go test ./...

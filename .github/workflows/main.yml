@@ -4,28 +4,78 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+
 env:
-  REGISTRY: "haraldka"
-  IMAGE_NAME: "shorter"
-  CONTAINER_NAME: "shorter"
+  IMAGE_NAME: "shrt"
+  REGISTRY: "ghcr.io"
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout master
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Set up Go 1.18.1
-        uses: actions/setup-go@v2
+      - name: Set up Go
+        uses: actions/setup-go@v3
         with:
-          go-version: 1.18.1
+          go-version: '^1.20'
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Test
         run: go test ./...
+
+  build_and_push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build image
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1 
+        with:
+         registry: ${{ env.REGISTRY }}
+         username: ${{ github.actor }}
+         password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push image
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "main" ] && VERSION=latest
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs: [test, build_and_push]
+
+    steps:
+      - name: Deploy to Server via SSH action
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSHKEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /home/${{ secrets.USERNAME }}/${{ env.IMAGE_NAME }}
+            docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+            docker compose up -d

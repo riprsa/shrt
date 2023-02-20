@@ -8,15 +8,14 @@ RUN go mod download
 
 COPY . .
 
-RUN go build
+RUN go build -o bin ./cmd/main.go
 
 FROM alpine
 
 WORKDIR /app
 
-COPY --from=builder /build/shorter .
-COPY --from=builder /build/view view
+COPY --from=builder /build .
 
 EXPOSE 80/tcp 443/tcp
 
-ENTRYPOINT ["/app/shorter"]
+ENTRYPOINT ["/app/bin"]
