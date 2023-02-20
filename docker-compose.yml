@@ -1,6 +1,6 @@
 services:
   server:
-    build: .
+    image: "ghcr.io/hararudoka/shrt:latest"
     env_file:
       - .env
     ports:
