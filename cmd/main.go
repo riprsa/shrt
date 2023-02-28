@@ -1,26 +1,30 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"os"
 
-	"github.com/hararudoka/shrt/internal/handler"
-	"github.com/hararudoka/shrt/internal/service"
-	"github.com/hararudoka/shrt/internal/storage"
+	"github.com/hararudoka/shrt/handler"
+	"github.com/hararudoka/shrt/service"
+	"github.com/hararudoka/shrt/storage"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+
 	db, err := storage.Open()
 	if err != nil {
-		panic(err)
+		log.Fatal().Err(err)
 	}
+	log.Info().Msg("database connection established")
 
 	s := service.New(db)
 
 	handler := handler.New(*s)
 
 	if err := http.ListenAndServe(":"+os.Getenv("PORT"), handler); err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("error during ListenAndServe")
 	}
 }
