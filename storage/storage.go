@@ -1,16 +1,15 @@
 package storage
 
 import (
+	"context"
 	"fmt"
 	"os"
 
-	"github.com/jmoiron/sqlx"
-
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v4"
 )
 
 type DB struct {
-	*sqlx.DB
+	*pgx.Conn
 }
 
 func Open() (*DB, error) {
@@ -19,33 +18,34 @@ func Open() (*DB, error) {
 	host := os.Getenv("DB_HOSTNAME")
 	dbName := os.Getenv("DB_NAME")
 	mode := os.Getenv("DB_MODE")
+	port := os.Getenv("DB_PORT")
 
-	connStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=%s",
-		name, password, host, dbName, mode)
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", name, password, host, port, dbName, mode)
 
-	db, err := sqlx.Connect("postgres", connStr)
+	conn, err := pgx.Connect(context.Background(), connStr)
 	if err != nil {
 		return nil, err
 	}
 
-	return &DB{DB: db}, nil
-}
-
-func (db *DB) Insert(URL, short string) error {
-	_, err := db.Exec("INSERT INTO links (url, short) VALUES ($1, $2)", URL, short)
-	return err
+	// defer conn.Close(context.Background())
+	return &DB{conn}, nil
 }
 
 func (db *DB) ByShort(short string) (string, error) {
-	row := db.QueryRow("SELECT url FROM links WHERE short=($1)", short)
 	var url string
+	row := db.QueryRow(context.Background(), "SELECT url FROM links WHERE short=$1", short)
 	err := row.Scan(&url)
 	return url, err
 }
 
 func (db *DB) ByURL(url string) (string, error) {
-	row := db.QueryRow("SELECT short FROM links WHERE url=($1)", url)
 	var short string
+	row := db.QueryRow(context.Background(), "SELECT short FROM links WHERE url=$1", url)
 	err := row.Scan(&short)
 	return short, err
+}
+
+func (db *DB) Insert(URL, short string) error {
+	_, err := db.Exec(context.Background(), "INSERT INTO links (url, short) VALUES ($1, $2)", URL, short)
+	return err
 }
