@@ -18,6 +18,21 @@ func TestSanitizeURL(t *testing.T) {
 			url:  "http://user:password@myhost.mydomain/path?query=value#fragment",
 			want: "myhost.mydomain/path?query=value#fragment",
 		},
+		{
+			name: "Full HTTPs URL",
+			url:  "https://user:password@myhost.mydomain/path?query=value#fragment",
+			want: "myhost.mydomain/path?query=value#fragment",
+		},
+		{
+			name: "Full FTP URL",
+			url:  "ftp://user:password@myhost.mydomain/path?query=value#fragment",
+			want: "myhost.mydomain/path?query=value#fragment",
+		},
+		// {
+		// 	name: "Broken HTTP",
+		// 	url:  "http:/user:password@myhost.mydomain/path?query=value#fragment",
+		// 	want: "myhost.mydomain/path?query=value#fragment",
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

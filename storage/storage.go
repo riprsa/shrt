@@ -2,10 +2,7 @@ package storage
 
 import (
 	"fmt"
-	"log"
 	"os"
-
-	"github.com/hararudoka/shrt/internal/model"
 
 	"github.com/jmoiron/sqlx"
 
@@ -26,14 +23,10 @@ func Open() (*DB, error) {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=%s",
 		name, password, host, dbName, mode)
 
-	log.Println(connStr)
-
 	db, err := sqlx.Connect("postgres", connStr)
 	if err != nil {
 		return nil, err
 	}
-
-	log.Println("connected")
 
 	return &DB{DB: db}, nil
 }
@@ -43,16 +36,16 @@ func (db *DB) Insert(URL, short string) error {
 	return err
 }
 
-func (db *DB) ByShort(short string) (model.Data, error) {
-	var data model.Data
-	row := db.QueryRow("SELECT * FROM links WHERE short=($1)", short)
-	err := row.Scan(&data.URL, &data.Short)
-	return data, err
+func (db *DB) ByShort(short string) (string, error) {
+	row := db.QueryRow("SELECT url FROM links WHERE short=($1)", short)
+	var url string
+	err := row.Scan(&url)
+	return url, err
 }
 
-func (db *DB) ByURL(url string) (model.Data, error) {
-	var data model.Data
-	row := db.QueryRow("SELECT * FROM links WHERE url=($1)", url)
-	err := row.Scan(&data.URL, &data.Short)
-	return data, err
+func (db *DB) ByURL(url string) (string, error) {
+	row := db.QueryRow("SELECT short FROM links WHERE url=($1)", url)
+	var short string
+	err := row.Scan(&short)
+	return short, err
 }

@@ -7,14 +7,12 @@ import (
 	"math/rand"
 	"net/url"
 	"strings"
-
-	"github.com/hararudoka/shrt/internal/model"
 )
 
 type Storage interface {
 	Insert(URL, short string) error
-	ByShort(short string) (model.Data, error)
-	ByURL(url string) (model.Data, error)
+	ByShort(short string) (string, error)
+	ByURL(url string) (string, error)
 }
 
 // Service is a struct for service layer
@@ -34,13 +32,13 @@ func New(db Storage) *Service {
 // such hash is looked up from the storage.
 func (s Service) URL2Hash(url string) (string, error) {
 	// validate url
-	url, ok := s.ValidateURL(url)
-	if !ok {
-		return "", fmt.Errorf("url is broken")
+	url, err := SanitizeURL(url)
+	if err != nil {
+		return "", err
 	}
 
 	// check if url exists in DB
-	dataFromDB, err := s.db.ByURL(url)
+	short, err := s.db.ByURL(url)
 	if err == sql.ErrNoRows {
 		short, err := s.createShort(url)
 		if err != nil {
@@ -51,25 +49,26 @@ func (s Service) URL2Hash(url string) (string, error) {
 		return "", err
 	}
 
-	return dataFromDB.Short, nil
+	return short, nil
 }
 
-// Hash2URL returns full URS by the short link.
+// Hash2URL returns full URL by the short link.
 func (s Service) Hash2URL(short string) (string, error) {
-	data, err := s.db.ByShort(short)
+	url, err := s.db.ByShort(short)
 	if err == sql.ErrNoRows {
 		return "", fmt.Errorf("404 page not found")
 	} else if err != nil {
 		return "", err
 	}
 
-	url, ok := s.ValidateURL(data.URL)
-	if !ok {
-		return "", fmt.Errorf("url is broken")
+	url, err = SanitizeURL(url)
+	if err != nil {
+		return "", err
 	}
 	return url, nil
 }
 
+// createShort creates short URL and stores it in DB
 func (s Service) createShort(url string) (string, error) {
 	for {
 		short := generateShort()
@@ -87,8 +86,8 @@ func (s Service) createShort(url string) (string, error) {
 }
 
 // exist checks if short url exists in DB
-func (s Service) exist(ms string) (bool, error) {
-	_, err := s.db.ByShort(ms)
+func (s Service) exist(short string) (bool, error) {
+	_, err := s.db.ByShort(short)
 	if err == sql.ErrNoRows {
 		return false, nil
 	}
@@ -122,20 +121,12 @@ func SanitizeURL(u string) (string, error) {
 	// Strip URL from the User identification and from the scheme
 	// prefix before returning.
 	url.User = nil
-	return strings.SplitN(url.String(), "://", 2)[1], nil
-}
+	url.Scheme = "http"
 
-// ValidateURL validates and adds protocol if link hasn't it
-func (s Service) ValidateURL(url string) (string, bool) {
-	// ok := s.URLRegexp.Match([]byte(url))
-	// if !ok {
-	// 	return "", false
-	// }
+	splitted := strings.Split(url.String(), "://")
+	if len(splitted) != 2 {
+		return "", fmt.Errorf("invalid URL")
+	}
 
-	// withProtocol := s.ProtocolRegexp.Match([]byte(url))
-	// if !withProtocol {
-	// 	url = "http://" + url
-	// }
-
-	return url, true
+	return splitted[1], nil
 }
