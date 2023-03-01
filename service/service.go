@@ -1,12 +1,13 @@
 package service
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"math/rand"
 	"net/url"
 	"strings"
+
+	"github.com/jackc/pgx/v4"
 )
 
 type Storage interface {
@@ -39,23 +40,16 @@ func (s Service) URL2Hash(url string) (string, error) {
 
 	// check if url exists in DB
 	short, err := s.db.ByURL(url)
-	if err == sql.ErrNoRows {
-		short, err := s.createShort(url)
-		if err != nil {
-			return "", err
-		}
-		return short, nil
-	} else if err != nil {
-		return "", err
+	if err == pgx.ErrNoRows {
+		return s.createShort(url)
 	}
-
-	return short, nil
+	return short, err
 }
 
 // Hash2URL returns full URL by the short link.
 func (s Service) Hash2URL(short string) (string, error) {
 	url, err := s.db.ByShort(short)
-	if err == sql.ErrNoRows {
+	if err == pgx.ErrNoRows {
 		return "", fmt.Errorf("404 page not found")
 	} else if err != nil {
 		return "", err
@@ -88,7 +82,7 @@ func (s Service) createShort(url string) (string, error) {
 // exist checks if short url exists in DB
 func (s Service) exist(short string) (bool, error) {
 	_, err := s.db.ByShort(short)
-	if err == sql.ErrNoRows {
+	if err == pgx.ErrNoRows {
 		return false, nil
 	}
 	return true, err
