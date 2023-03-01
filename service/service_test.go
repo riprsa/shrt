@@ -1,6 +1,10 @@
-package service
+package service_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/hararudoka/shrt/service"
+)
 
 func TestSanitizeURL(t *testing.T) {
 	tests := []struct {
@@ -11,7 +15,7 @@ func TestSanitizeURL(t *testing.T) {
 	}{
 		{
 			name: "Empty String URL",
-			err:  ErrEmptyURL,
+			err:  service.ErrEmptyURL,
 		},
 		{
 			name: "Full HTTP URL",
@@ -37,7 +41,7 @@ func TestSanitizeURL(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt := tt
-			got, err := SanitizeURL(tt.url)
+			got, err := service.SanitizeURL(tt.url)
 			if err != tt.err {
 				t.Errorf("SanitizeURL()\nwant error: %v\n got error: %v", tt.err, err)
 				return
