@@ -25,11 +25,7 @@ func New(s service.Service) http.Handler {
 
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		if len(r.URL.Path) == 7 {
-			h.Redirect(w, r)
-			return
-		}
-		http.NotFound(w, r)
+		h.Redirect(w, r)
 		return
 	}
 	if r.Method == http.MethodPost {
@@ -45,7 +41,7 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
 }
 
 // Short returns JSON with a short. Asking for a URL in the body.
@@ -53,15 +49,16 @@ func (h Handler) Short(w http.ResponseWriter, r *http.Request) {
 	var u model.URL
 	err := json.NewDecoder(r.Body).Decode(&u)
 	if err != nil {
-		log.Warn().Err(err).Msg("error during json decoding")
+		log.Info().Err(err).Msg("error during json decoding")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	short, err := h.Service.URL2Hash(u.URL)
 	if err != nil {
-		log.Warn().Err(err).Msg("error during json decoding")
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Info().Err(err).Msg("error during h.Service.URL2Hash")
+		// we don't want to show internal errors to the user, so we return 404
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -70,7 +67,7 @@ func (h Handler) Short(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewEncoder(w).Encode(model.Short{Short: short})
 	if err != nil {
-		log.Warn().Err(err).Msg("error during json decoding")
+		log.Info().Err(err).Msg("error during json decoding")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -81,15 +78,15 @@ func (h Handler) URL(w http.ResponseWriter, r *http.Request) {
 	var s model.Short
 	err := json.NewDecoder(r.Body).Decode(&s)
 	if err != nil {
-		log.Warn().Err(err).Msg("error during json decoding")
+		log.Info().Err(err).Msg("error during Body json decoding")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	url, err := h.Service.Hash2URL(s.Short)
 	if err != nil {
-		log.Warn().Err(err).Msg("error during json decoding")
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Info().Err(err).Msg("error during h.Service.Hash2URL")
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -98,7 +95,7 @@ func (h Handler) URL(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewEncoder(w).Encode(model.URL{URL: url})
 	if err != nil {
-		log.Warn().Err(err).Msg("error during json decoding")
+		log.Info().Err(err).Msg("error during URL json decoding")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -106,12 +103,10 @@ func (h Handler) URL(w http.ResponseWriter, r *http.Request) {
 
 func (h Handler) Redirect(w http.ResponseWriter, r *http.Request) {
 	// we here only if it is GET method of "/"
-
 	url, err := h.Service.Hash2URL(r.URL.Path[1:])
 	if err != nil {
-		log.Warn().Err(err).Msg("error Hash2URL")
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(err.Error()))
+		log.Info().Err(err).Msg("redirect error")
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
