@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type DB struct {
-	*pgx.Conn
+	*pgxpool.Pool
 }
 
 func Open() (*DB, error) {
@@ -22,13 +22,13 @@ func Open() (*DB, error) {
 
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", name, password, host, port, dbName, mode)
 
-	conn, err := pgx.Connect(context.Background(), connStr)
+	pool, err := pgxpool.New(context.Background(), connStr)
 	if err != nil {
 		return nil, err
 	}
 
 	// defer conn.Close(context.Background())
-	return &DB{conn}, nil
+	return &DB{pool}, nil
 }
 
 func (db *DB) ByShort(short string) (string, error) {
