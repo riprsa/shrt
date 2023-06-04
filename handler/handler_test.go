@@ -1,4 +1,4 @@
-package handler
+package handler_test
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/hararudoka/shrt/handler"
 	"github.com/hararudoka/shrt/service"
 )
 
@@ -14,6 +15,7 @@ var (
 	// common inputs for all test cases
 	googleURL   = "{\"url\":\"google.com\"}"
 	XXXXXXShort = "{\"short\":\"XXXXXX\"}\n"
+	error404    = "404 page not found\n"
 )
 
 type MockStore struct {
@@ -45,7 +47,7 @@ func TestHandler_ServeHTTP(t *testing.T) {
 	// create common mock for all test cases
 	dbMock := MockStore{store: map[string]string{"google.com": "XXXXXX"}}
 	s := service.New(dbMock)
-	h := New(*s)
+	h := handler.New(*s)
 
 	tests := []struct {
 		name     string
@@ -67,7 +69,7 @@ func TestHandler_ServeHTTP(t *testing.T) {
 		{
 			name:     "POST new url -> /short = 404",
 			input:    "{\"url\":\"absent.url\"}",
-			expected: "404 page not found\n",
+			expected: error404,
 			path:     "/short",
 			method:   http.MethodPost,
 			status:   http.StatusNotFound,
@@ -85,7 +87,7 @@ func TestHandler_ServeHTTP(t *testing.T) {
 		{
 			name:     "POST new short -> /url = 404",
 			input:    "{\"short\":\"BBBBBB\"}\n",
-			expected: "404 page not found\n",
+			expected: error404,
 			path:     "/url",
 			method:   http.MethodPost,
 			status:   http.StatusNotFound,
@@ -101,7 +103,7 @@ func TestHandler_ServeHTTP(t *testing.T) {
 		},
 		{
 			name:     "GET /BBBBBB = 404",
-			expected: "404 page not found\n",
+			expected: error404,
 			path:     "/BBBBBB",
 			method:   http.MethodGet,
 			status:   http.StatusNotFound,
@@ -111,7 +113,7 @@ func TestHandler_ServeHTTP(t *testing.T) {
 		{
 			name:     "GET BBBBBB -> /short = 400",
 			input:    "BBBBBB",
-			expected: "404 page not found\n",
+			expected: error404,
 			path:     "/url",
 			method:   http.MethodGet,
 			status:   http.StatusNotFound,
@@ -119,7 +121,7 @@ func TestHandler_ServeHTTP(t *testing.T) {
 		{
 			name:     "GET BBBBBB -> /url = 400",
 			input:    "BBBBBB",
-			expected: "404 page not found\n",
+			expected: error404,
 			path:     "/short",
 			method:   http.MethodGet,
 			status:   http.StatusNotFound,
@@ -127,7 +129,7 @@ func TestHandler_ServeHTTP(t *testing.T) {
 		{
 			name:     "POST BBBBBB -> /short = 403",
 			input:    "{\"url\":\"BBBBBB\"}\n",
-			expected: "404 page not found\n",
+			expected: error404,
 			path:     "/short",
 			method:   http.MethodPost,
 			status:   http.StatusNotFound,
@@ -135,7 +137,7 @@ func TestHandler_ServeHTTP(t *testing.T) {
 		{
 			name:     "POST BBBBBB -> /url = 404",
 			input:    "{\"short\":\"BBBBBB\"}\n",
-			expected: "404 page not found\n",
+			expected: error404,
 			path:     "/url",
 			method:   http.MethodPost,
 			status:   http.StatusNotFound,
