@@ -2,7 +2,9 @@ package handler
 
 import (
 	"encoding/json"
+	"html/template"
 	"net/http"
+	"strings"
 
 	"github.com/hararudoka/shrt/model"
 	"github.com/hararudoka/shrt/service"
@@ -14,26 +16,32 @@ import (
 type Handler struct {
 	*service.Service
 	*zerolog.Logger
+
+	templates *template.Template
 }
 
 func New(s service.Service) http.Handler {
+	templates := template.Must(template.ParseFiles(
+		"view/templates/index.html",
+		"view/templates/template.html",
+		"view/templates/base.html",
+	))
+
 	return Handler{
 		&s,
 		&log.Logger,
+
+		templates,
 	}
 }
 
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		h.Redirect(w, r)
-		return
-	}
 	if r.Method == http.MethodPost {
-		if r.URL.Path == "/short" {
+		if r.URL.Path == "/api/short" {
 			h.Short(w, r)
 			return
 		}
-		if r.URL.Path == "/url" {
+		if r.URL.Path == "/api/url" {
 			h.URL(w, r)
 			return
 		}
@@ -41,11 +49,32 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.Method == http.MethodGet {
+		if strings.HasPrefix(r.URL.Path, "/assets") {
+			http.FileServer(http.Dir("./view")).ServeHTTP(w, r)
+		}
+
+		if r.URL.Path == "/" {
+			data := map[string]string{
+				"aboba": "aboa",
+			}
+			err := h.templates.ExecuteTemplate(w, "main", data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			return
+		}
+
+		h.Redirect(w, r)
+		return
+	}
+
 	http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
 }
 
 // Short returns JSON with a short. Asking for a URL in the body.
-func (h Handler) Short(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Short(w http.ResponseWriter, r *http.Request) {
 	var u model.URL
 	err := json.NewDecoder(r.Body).Decode(&u)
 	if err != nil {
@@ -74,7 +103,7 @@ func (h Handler) Short(w http.ResponseWriter, r *http.Request) {
 }
 
 // URL returns JSON with a full URL. Asking for a Short in the body.
-func (h Handler) URL(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) URL(w http.ResponseWriter, r *http.Request) {
 	var s model.Short
 	err := json.NewDecoder(r.Body).Decode(&s)
 	if err != nil {
@@ -101,7 +130,7 @@ func (h Handler) URL(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h Handler) Redirect(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Redirect(w http.ResponseWriter, r *http.Request) {
 	// we here only if it is GET method of "/"
 	url, err := h.Service.Hash2URL(r.URL.Path[1:])
 	if err != nil {

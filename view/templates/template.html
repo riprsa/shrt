@@ -1,0 +1,59 @@
+{{define "main"}}
+{{template "base"}}
+<div class="container">
+  <div class="intro">
+    <h2 class="text-center">URL Shorter</h2>
+    <p class="text-center"></p>
+  </div>
+  <form class="d-flex justify-content-center flex-wrap" method="post">
+    <div class="mb-3"><input class="form-control" type="text" name="url" placeholder="Your Link"></div>
+    <div class="mb-3">
+      <button class="btn btn-primary" type="submit">Create</button>
+    </div>
+  </form>
+</div>
+{{template "down"}}
+{{end}}
+
+{{define "result"}}
+{{template "base"}}
+<div class="container">
+  <div class="intro">
+    <h2 class="text-center">URL Shorter</h2>
+    <p class="text-center"> {{.}} </p>
+  </div>
+</div>
+{{template "down"}}
+{{end}}
+
+{{define "error"}}
+{{template "base"}}
+<div class="container">
+  <div class="intro">
+    <h2 class="text-center">Error</h2>
+    <p class="text-center"> {{.}} </p>
+  </div>
+</div>
+{{template "down"}}
+{{end}}
+
+{{define "wrongURL"}}
+{{template "base"}}
+<div class="container">
+  <div class="intro">
+    <h2 class="text-center">Error</h2>
+    <p class="text-center"> <a href="/">Try again</a> </p>
+  </div>
+</div>
+{{template "down"}}
+{{end}}
+
+{{define "404"}}
+{{template "base"}}
+<div class="container">
+  <div class="intro">
+    <h2 class="text-center">404</h2>
+  </div>
+</div>
+{{template "down"}}
+{{end}}
