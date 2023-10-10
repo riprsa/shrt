@@ -59,7 +59,7 @@ export default {
 
     async copyURL() {
       try {
-        await navigator.clipboard.writeText("http://localhost/" + this.short);
+        await navigator.clipboard.writeText("https://s.x16.me/" + this.short);
         // alert('Copied'); // TODO: may be alerts?
       } catch ($e) {
         // ignore
@@ -67,7 +67,7 @@ export default {
     },
 
     async submit() {
-      const rawResponse = await fetch('http://localhost/api/short', {
+      const rawResponse = await fetch('https://s.x16.me/api/short', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

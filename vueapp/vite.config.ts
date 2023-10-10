@@ -20,7 +20,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost', // Your API server's URL
+        target: 'https://s.x16.me', // Your API server's URL
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, 'api'),
