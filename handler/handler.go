@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"html/template"
 	"net/http"
 	"strings"
 
@@ -16,22 +15,12 @@ import (
 type Handler struct {
 	*service.Service
 	*zerolog.Logger
-
-	templates *template.Template
 }
 
 func New(s service.Service) http.Handler {
-	templates := template.Must(template.ParseFiles(
-		"view/templates/index.html",
-		"view/templates/template.html",
-		"view/templates/base.html",
-	))
-
 	return Handler{
 		&s,
 		&log.Logger,
-
-		templates,
 	}
 }
 
@@ -50,23 +39,20 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodGet {
+		if r.URL.Path == "/" {
+			http.ServeFile(w, r, "./view/index.html")
+			return
+		}
 		if strings.HasPrefix(r.URL.Path, "/assets") {
 			http.FileServer(http.Dir("./view")).ServeHTTP(w, r)
-		}
-
-		if r.URL.Path == "/" {
-			data := map[string]string{
-				"aboba": "aboa",
-			}
-			err := h.templates.ExecuteTemplate(w, "main", data)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
 			return
 		}
 
-		h.Redirect(w, r)
+		if len(r.URL.Path) == 7 {
+			h.Redirect(w, r)
+			return
+		}
+		http.NotFound(w, r)
 		return
 	}
 
@@ -82,6 +68,14 @@ func (h *Handler) Short(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	// Log the HTTP request with the request body using ZeroLog
+	log.Info().
+		Str("method", r.Method).
+		Str("path", r.URL.Path).
+		Str("remote_addr", r.RemoteAddr).
+		Str("URL", u.URL). // Log the request body as a string
+		Msg("Received HTTP request")
 
 	short, err := h.Service.URL2Hash(u.URL)
 	if err != nil {
@@ -111,6 +105,14 @@ func (h *Handler) URL(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	// Log the HTTP request with the request body using ZeroLog
+	log.Info().
+		Str("method", r.Method).
+		Str("path", r.URL.Path).
+		Str("remote_addr", r.RemoteAddr).
+		Str("URL", s.Short). // Log the request body as a string
+		Msg("Received HTTP request")
 
 	url, err := h.Service.Hash2URL(s.Short)
 	if err != nil {

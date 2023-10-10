@@ -24,6 +24,8 @@ func main() {
 
 	handler := handler.New(*s)
 
+	log.Info().Msg("services established")
+
 	if err := http.ListenAndServe(":"+os.Getenv("PORT"), handler); err != nil {
 		log.Fatal().Err(err).Msg("error during ListenAndServe")
 	}

@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v5"
 )
 
 type Storage interface {
@@ -104,7 +104,7 @@ var ErrEmptyURL = errors.New("URL must not be empty string")
 // schema and user identification parts. Sanitized URL contains only host,
 // path, query and fragment parts (per RFC 3986) in return to the provided
 // ID string.
-func SanitizeURL(u string) (string, error) {
+func SanitizeURL(u string) (string, error) { // TODO: check to ensure that is works, expand test cases
 	if u == "" {
 		return "", ErrEmptyURL
 	}
