@@ -1,0 +1,16 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": ["src/*","src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/generated/*"],
+  "exclude": ["src/**/__tests__/*"],
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "noEmit":true,
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "verbatimModuleSyntax": false,
+  }
+}
+
