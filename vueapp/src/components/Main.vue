@@ -1,5 +1,5 @@
 <template>
-  <div class="p-8 bg-neutral rounded-lg shadow-md max-w-md">
+  <div class="p-8 bg rounded-lg shadow-md max-w-md">
 
     <div v-if="!drawResult">
       <h1 class="text-2xl font-bold mb-4">Hello, user!</h1>
