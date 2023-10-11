@@ -13,7 +13,7 @@
       <div v-if="short != '' && errorMessage == ''">
         <h1 class="text-2xl font-bold mb-4">URL Shortener Result</h1>
         <div class="mb-4">
-          <span id="shortened-url" class="w-full p-2 rounded-md border border-gray-300 block">http://localhost/{{ short
+          <span id="shortened-url" class="w-full p-2 rounded-md border border-gray-300 block">https://s.x16.me/{{ short
           }}</span>
         </div>
         <div class="flex justify-between">
