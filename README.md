@@ -7,13 +7,13 @@ This project is my first attempt at a URL shortener. It's a simple web app that 
 ### Create a short URL
 
 ```sh
-curl -X POST -H "Content-Type: application/json" -d '{"url":"example.com/mypath"}' https://s.x16.me/short
+curl -X POST -H "Content-Type: application/json" -d '{"url":"example.com/mypath"}' https://s.x16.me/api/short
 ```
 
 ### Get a short URL
 
 ```sh
-curl -X POST -H "Content-Type: application/json" -d '{"short":"AAAAAA"}' https://s.x16.me/url
+curl -X POST -H "Content-Type: application/json" -d '{"short":"AAAAAA"}' https://s.x16.me/api/url
 ```
 
 ### Redirect from a short URL
